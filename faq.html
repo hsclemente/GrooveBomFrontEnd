@@ -1,0 +1,292 @@
+<html>
+
+<head>
+    <link rel="stylesheet" href="./css/main.css">
+    <link rel="stylesheet" href="./css/slick.css">
+    <link rel="stylesheet" href="./css/slick-theme.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="./js/main.js"></script>
+
+    <title>Meu TCC 2</title>
+
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            carregarFaq();
+        });
+
+        function carregarFaq() {
+            fetch("https://tcc2-production.up.railway.app/faq", {
+                method: "GET",
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8",
+                    "Authorization": "Bearer " + localStorage.getItem('token')
+                },
+            }).then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error(response.status);
+                }
+            }).then(data => {
+                data.forEach(element => {
+                    criarComentario(element.id, element.pergunta, element.usuarioFaq.nome, element.respostas)
+                });
+            }).catch(err => {
+                alert('Erro ao carregar FAQ, tente novamente.')
+            })
+        }
+
+        var palavrasProibidas = ['Aleijada',
+            'aleijada',
+            'aleijado',
+            'Aleijado',
+            'arrombada',
+            'Arrombada',
+            'arrombado',
+            'Arrombado',
+            'abestado',
+            'arregaçado',
+            'arregaçada',
+            'Arregaçado',
+            'Arregaçada',
+            'babaca',
+            'Babaca',
+            'bosta',
+            'Bosta',
+            'burra',
+            'Burra',
+            'burro',
+            'Burro',
+            'boiola',
+            'Boiola',
+            'boiolinha',
+            'besta',
+            'broxa',
+            'corna',
+            'corno',
+            'cu ',
+            'Cu ',
+            ' cu ',
+            ' Cu ',
+            'cuzão',
+            'cuzao',
+            'Cuzão',
+            'Cuzao',
+            'cuzona',
+            'Cuzona',
+            'caralhudo',
+            'caralho',
+            'Caralho',
+            'desgraçada',
+            'desgraçado',
+            'esquizofrênica',
+            'esquizofrênico',
+            'escroto',
+            'foda',
+            'fuck',
+            'fudida',
+            'fudido',
+            'filho da puta',
+            'fdp',
+            'gay',
+            'idiota',
+            'imbecil',
+            'merda',
+            'monoteta',
+            'otaria',
+            'otária',
+            'otario',
+            'otário',
+            'prostituta',
+            'prostituto',
+            'punheta',
+            'puta',
+            'putinha',
+            'putão',
+            'quenga',
+            'rapariga',
+            'traveco',
+            'vadia',
+            'vadio',
+            'vagabunda',
+            'vagabundo',
+            'xana',
+            'xibiu',
+            'xavasca'];
+
+        function adicionarComentario() {
+            var comentario = document.getElementById('comentario').value;
+
+            var contemPalavraProibida = palavrasProibidas.some(function (palavra) {
+                return comentario.includes(palavra);
+            });
+
+            if (comentario.length == 0 ) {
+                alert('Adicione um comentario');
+                return;
+            }
+            
+            if (contemPalavraProibida) {
+                alert('O comentário contém palavras inapropriadas com as diretrizes do nosso programa. Por favor, revise seu comentário.');
+                return;
+            }
+
+            document.getElementById('comentario').value = '';
+
+            fetch("https://tcc2-production.up.railway.app/faq", {
+                method: "POST",
+                body: JSON.stringify({
+                    pergunta: comentario,
+                    usuarioId: localStorage.getItem('id'),
+                }),
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8",
+                    "Authorization": "Bearer " + localStorage.getItem('token')
+                },
+            }).then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error();
+                }
+            }).then(data => {
+                location.reload();
+            })
+        }
+
+        function criarComentario(id, comentario, user, respostas) {
+            var comentariosContainer = document.getElementById('comentarios');
+
+            var comentarioElement = document.createElement('div');
+            comentarioElement.classList.add('comentario');
+            comentarioElement.innerHTML = '<div class="conteudo-comentario principal">'
+                + '<p class="usuario-pergunta"><b>Comentário por: </b> ' + user + '</p>' + '<p class="user-comment">' + comentario + '</p>' +
+                '<div class="respostas"></div>' + '<div class="open-answer" id="open-answer" onclick="showAnswerBox(event)"><small class="responder-small">Responder</small></div>' +
+                '<textarea class="resposta-campo" style="display: none" id="answer-box" rows="1" placeholder="Escreva uma resposta"></textarea>' +
+                '<button class="btn-padrao" onclick="adicionarResposta(' + id + ',this)">Enviar</button>' +
+                '</div>';
+
+            comentariosContainer.appendChild(comentarioElement);
+
+            var respostasContainer = comentarioElement.querySelector('.respostas');
+            
+            respostas.forEach(resposta => {
+                criarResposta(resposta.resposta, resposta.usuarioResposta.nome, respostasContainer);
+            });
+        }
+        
+        function criarResposta(resposta, user, respostasContainer) {
+            var respostaElement = document.createElement('div');
+            respostaElement.classList.add('resposta');
+            respostaElement.innerHTML = '<p class="usuario-resposta"><b>Respondido por: </b>' + user + '</p><p class="user-comment">' + resposta + '</p>';
+
+            var respostas = respostasContainer.querySelectorAll('.resposta');
+            respostasContainer.appendChild(respostaElement);
+        }
+        
+        function adicionarResposta(id, button) {
+            var resposta = button.previousElementSibling.value;
+
+            if (resposta.length == 0) {
+                alert('Favor inserir um valor na resposta');
+                return;
+            }
+
+            fetch("https://tcc2-production.up.railway.app/faq/responder/" + id , {
+                method: "POST",
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8",
+                    "Authorization": "Bearer " + localStorage.getItem('token')
+                },
+                body: JSON.stringify({
+                    resposta: resposta,
+                    usuarioId: localStorage.getItem('id'),
+                }),
+            }).then(response => {
+                if (!response.ok) {
+                    throw new Error(response.status);
+                } else  {
+                    location.reload();
+                }
+            }).catch(err => {
+                alert('Erro ao enviar resposta')
+            })
+        }
+
+
+        function showAnswerBox(event) {
+            let btn = event.currentTarget;
+            btn.nextSibling.classList.toggle('show-box');
+        }
+
+    </script>
+</head>
+
+<body>
+    <header class="menu-principal">
+        <div class="container">
+            <div class="header">
+                <div class="logo">
+                    <a href="perfil.html">
+                        <img src="./img/logo-grooveBom.png" />
+                    </a>
+                </div>
+                <div class="menu">
+                    <ul>
+                        <li><a href="perfil.html" style="color: black;">Usuário</a></li>
+                        <li><a href="banda.html">Banda</a></li>
+                    </ul>
+                </div>
+                <div class="logout">
+                    <a href="index.html" onclick="sair()">Sair<img src="./img/sair.png" alt=""></a>
+                </div>
+            </div>
+        </div>
+
+    </header>
+    <div class="tabela-financeiro">
+        <div class="container-fluid">
+            <div class="row no-gutters">
+                <div class="col-md-2">
+                    <div class="menu-lateral">
+                        <ul class="list-unstyled">
+                            <li><a href="financeiro.html"><span>Financeiro</span></a></li>
+                            <li><a href="tarefas.html"><span>Gestão de Tarefas</span></a></li>
+                            <li><a href="compromissos.html"><span>Gestão de Compromissos</span></a></li>
+                            <li><a href="faq.html" style="font-weight: bold;"><span>FAQ</span></a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-md-10">
+                    <div class="conteudo-adm">
+                        <div class="wrap-faq">
+                            <h2>FAQ</h2>
+
+                            <div class="card fixed-comentario">
+                                <div class="card-body">
+                                    <textarea id="comentario" class="form-control" rows="3"
+                                        placeholder="Digite um comentário"></textarea>
+                                </div>
+                                <button onclick="adicionarComentario()" class="btn-padrao mt-2">Enviar</button>
+                            </div>
+                            <div id="comentarios" class="comentarios">
+                                <!-- Aqui serão exibidos os comentários -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

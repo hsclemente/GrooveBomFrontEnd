@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="stylesheet" href="./css/login.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
+    <script src="./js/main.js"></script>
+    <title>Tela de Login</title>
+    <script>
+        function enviarForm() {
+            var inputUsername = document.getElementById('username').value;
+            var inputPassword = document.getElementById('password').value;
+
+            fetch("https://tcc2-production.up.railway.app/login", {
+                method: "POST",
+                body: JSON.stringify({
+                    username: inputUsername,
+                    password: inputPassword,
+                }),
+                headers: {
+                    "Content-type": "application/json; charset=UTF-8",
+                },
+            }).then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    document.getElementById('Error').textContent = 'Usuário ou senha inválido.';
+                }
+            }).then(data => {
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('id', data.id);
+                localStorage.setItem('codigoBanda', data.codigoBanda);
+                window.location.href = './perfil.html';
+            })
+        }
+
+        function togglePassword(eye) {
+            const password = document.querySelector('#password');
+            // toggle the type attribute
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+            // toggle the eye slash icon
+            eye.classList.toggle('fa-eye-slash');
+        }
+    </script>
+
+</head>
+
+<body>
+    <!-- <div class="btn-voltar">
+        <button class="voltar" onclick="window.history.back()">Voltar</button>
+    </div> -->
+    <div class="btn-voltar">
+        <a href="#" onclick="window.location.href = './index.html'">
+            <img src="./img/logo-grooveBom.png" alt="Voltar">
+        </a>
+    </div>
+
+    <div class="container mt-5">
+        <div class="tela-login">
+            <h1>Login</h1>
+            <input type="text" placeholder="E-mail" id="username">
+            <br><br>
+            <div class="visual-senha">
+            <input type="password" placeholder="Senha" id="password">
+            <i class="far fa-eye" id="togglePassword" style="margin-left: 90%; margin-top: 10px; cursor: pointer; color: black;" onclick="togglePassword(this)"></i>
+            </div>
+            <small id="Error" class="error"></small>
+            <button class="btn-padrao login" onclick="enviarForm()">Enviar</button>
+            <br><br>
+            <button class="btn-padrao login" onclick="window.location.href='novoUsuario.html'">Criar Novo
+                Usuário</button>
+        </div>
+    </div>
+</body>
+
+</html>

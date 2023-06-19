@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="./css/login.css">
+    <link rel="stylesheet" href="./css/main.css">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
+
+    <title>Criar Nova Banda</title>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-image: linear-gradient(45deg, orange, darkorange);
+        }
+        
+        input {
+            padding: 15px;
+            border: none;
+            outline: none;
+            font-size: 15px;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            display: block;
+        }
+        button {
+            background-color: darkorange;
+            border: none;
+            padding: 15px;
+            width: 100%;
+            border-radius: 10px;
+            color: white;
+            font-size: 15px;
+        }
+        button:hover{
+            background-color: orange;
+        }
+    </style>
+
+<script>
+    function enviarForm() {
+        var formularioCorreto = true;
+        var inputNome = document.getElementById('nome').value;
+        var inputCodigo = document.getElementById('codigo').value;
+        var inputConfirmarCodigo = document.getElementById('confirmar-codigo').value;
+
+        if (inputNome.length == 0){
+            formularioCorreto = false;
+            document.getElementById('erro-nome').textContent='Favor informar um valor.';
+        }else{
+            document.getElementById('erro-nome').textContent='';
+        }
+
+
+        if (inputCodigo.length == 0){
+            formularioCorreto = false;
+            document.getElementById('erro-codigo').textContent='Codigo inválido.';
+        }else{
+            document.getElementById('erro-codigo').textContent='';
+        }
+        
+        if (inputCodigo != inputConfirmarCodigo) {
+            formularioCorreto = false;
+            document.getElementById('erro-confirmar-codigo').textContent='Valores não coincidem';
+        } else {
+            document.getElementById('erro-confirmar-codigo').textContent='';
+        }
+
+        if (!formularioCorreto){
+            return;
+        }
+
+        fetch("https://tcc2-production.up.railway.app/banda", {
+            method: "POST",
+            body: JSON.stringify({
+                nome: inputNome,
+                codigoAcesso: inputCodigo,
+            }),
+            headers: {
+                "Content-type": "application/json; charset=UTF-8",
+                "Authorization": "Bearer " + localStorage.getItem('token')
+            },
+        }).then(response => {
+            if (response.status == 201) {
+                document.getElementById('ErrorForm').textContent='';
+                return response.json();
+            } else {
+                throw new Error(response.status);
+            }
+        }).then(data => {
+            localStorage.setItem('codigoBanda', data.id);
+            window.location.href = './banda.html';
+        }).catch(response => {
+            if (response.message == 400) {
+                document.getElementById('ErrorForm').textContent='Código de acesso já existe.';
+            } else {
+                document.getElementById('ErrorForm').textContent='Erro ao enviar formulário.';
+            }
+        })
+    }
+
+
+    function togglePassword(eye) {
+        const password = document.querySelector('#codigo');
+        // toggle the type attribute
+        const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+        password.setAttribute('type', type);
+        // toggle the eye slash icon
+        eye.classList.toggle('fa-eye-slash');
+    }
+
+    function toggleConfirmPassword(eye) {
+        const password = document.querySelector('#confirmar-codigo');
+        // toggle the type attribute
+        const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+        password.setAttribute('type', type);
+        // toggle the eye slash icon
+        eye.classList.toggle('fa-eye-slash');
+    }
+</script>
+</head>
+<body>
+    <div class="btn-voltar">
+        <a href="#" onclick="window.location.href = './perfil.html'">
+            <img src="./img/logo-grooveBom.png" alt="Voltar">
+        </a>
+    </div>
+    <div class="tela-login nova-banda">
+        <h1>Nova Banda</h1>
+        
+        <input type="text" id="nome" name="nome" placeholder="Nome da Banda" class="w-100 input-login" autofocus>
+        
+        <small id="erro-nome" style="color: red;"></small>
+        
+        <div class="visual-senha">
+        <input type="password" id="codigo" name="codigo" placeholder="Código de Acesso" class="w-100 input-login">
+        <i class="far fa-eye" id="togglePassword" style="margin-left: 90%; cursor: pointer; color: black;" onclick="togglePassword(this)"></i>
+        </div>
+
+        <small id="erro-codigo" style="color: red;"></small>
+        
+        <div class="visual-senha">
+        <input type="password" id="confirmar-codigo" name="confirmar-codigo" placeholder="Confirmar Código de Acesso" class="w-100 input-login">
+        <i class="far fa-eye" id="togglePassword" style="margin-left: 90%; cursor: pointer; color: black;" onclick="toggleConfirmPassword(this)"></i>
+        </div>
+
+        <small id="erro-confirmar-codigo" style="color: red;"></small>
+        <br>
+        <button onclick="enviarForm()" class="botao-login-banda" style="display: inline-block; cursor: pointer;">Enviar</button>
+        <br><br>
+        <small id="ErrorForm" style="color: red;"></small>
+        <p>Já possui uma banda?<a href="acessarBanda.html" style="color: orange; text-decoration: none;"> Associe-se</a></p>
+    </div>
+</body>
+
+
+</html>
