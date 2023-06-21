@@ -32,9 +32,14 @@
         }
 
         function buscaGraficos() {
+            console.log('buscando grafico')
+            console.log(localStorage.getItem('codigoBanda') == 'null')
             if (localStorage.getItem('codigoBanda') == 'null') {
+                console.log('Entrou no return')
                 return;
             }
+
+            console.log('continua dando ruim,')
 
             fetch("https://groovebombackend-production.up.railway.app/compromisso/grafico/banda/" + localStorage.getItem('codigoBanda'), {
                 method: "GET",
