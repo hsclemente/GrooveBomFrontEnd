@@ -21,24 +21,19 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            var deveriaBuscarGrafico = verificaBanda();
-            if (deveriaBuscarGrafico) {
-                buscaGraficos();
-            }
+            verificaBanda();
+            buscaGraficos();
         });
 
         function verificaBanda() {
             if (localStorage.getItem('codigoBanda') == 'null') {
                 window.location.href = './novaBanda.html';
-                return false;
             }
-
-            return true;
         }
 
         function buscaGraficos() {
             if (localStorage.getItem('codigoBanda') == 'null') {
-                return false;
+                return;
             }
 
             fetch("https://groovebombackend-production.up.railway.app/compromisso/grafico/banda/" + localStorage.getItem('codigoBanda'), {
