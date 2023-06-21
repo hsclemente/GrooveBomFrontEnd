@@ -21,62 +21,22 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            verificaBanda();
+            var deveriaBuscarGrafico = verificaBanda();
+            if (deveriaBuscarGrafico) {
+                buscaGraficos();
+            }
         });
 
         function verificaBanda() {
             if (localStorage.getItem('codigoBanda') == 'null') {
                 window.location.href = './novaBanda.html';
+                return false;
             }
+
+            return true;
         }
-    </script>
-</head>
 
-<body>
-    <header class="menu-principal">
-        <div class="container">
-            <div class="header">
-                <div class="logo">
-                    <a href="index.html">
-                        <img src="./img/logo-grooveBom.png" />
-                    </a>
-                </div>
-                <div class="menu">
-                    <ul>
-                        <li><a href="perfil.html">Usuário</a></li>
-                        <li><a href="banda.html" style="color: black;">Banda</a></li>
-                    </ul>
-                </div>
-                <div class="logout">
-                    <a href="index.html" onclick="sair()">Sair<img src="./img/sair.png" alt=""></a>
-                </div>
-            </div>
-        </div>
-
-    </header>
-    <div class="tabela-financeiro">
-        <div class="container-fluid">
-            <div class="row no-gutters">
-                <div class="col-md-2">
-                    <div class="menu-lateral">
-                        <ul class="list-unstyled">
-                            <li><a href="integrantesBanda.html"><span>Integrantes</span></a></li>
-                            <li><a href="financeiroBanda.html"><span>Financeiro</span></a></li>
-                            <li><a href="tarefasBanda.html"><span>Gestão de Tarefas</span></a></li>
-                            <li><a href="compromissosBanda.html"><span>Gestão de Compromissos</span></a></li>
-                        </ul>
-                    </div>
-                </div>
-                <div class="col-md-10">
-                    <div class="conteudo-adm">
-                        <canvas id="myChart" style="width: 50%;"></canvas>
-                    </div>
-                    <script>
-                        document.addEventListener('DOMContentLoaded', function () {
-                            buscaGraficos();
-                        });
-
-                        function buscaGraficos() {
+        function buscaGraficos() {
                             fetch("https://groovebombackend-production.up.railway.app/compromisso/grafico/banda/" + localStorage.getItem('codigoBanda'), {
                                 method: "GET",
                                 headers: {
@@ -123,8 +83,48 @@
                                 }
                             });
                         }
-                    </script>
-                    
+    </script>
+</head>
+
+<body>
+    <header class="menu-principal">
+        <div class="container">
+            <div class="header">
+                <div class="logo">
+                    <a href="index.html">
+                        <img src="./img/logo-grooveBom.png" />
+                    </a>
+                </div>
+                <div class="menu">
+                    <ul>
+                        <li><a href="perfil.html">Usuário</a></li>
+                        <li><a href="banda.html" style="color: black;">Banda</a></li>
+                    </ul>
+                </div>
+                <div class="logout">
+                    <a href="index.html" onclick="sair()">Sair<img src="./img/sair.png" alt=""></a>
+                </div>
+            </div>
+        </div>
+
+    </header>
+    <div class="tabela-financeiro">
+        <div class="container-fluid">
+            <div class="row no-gutters">
+                <div class="col-md-2">
+                    <div class="menu-lateral">
+                        <ul class="list-unstyled">
+                            <li><a href="integrantesBanda.html"><span>Integrantes</span></a></li>
+                            <li><a href="financeiroBanda.html"><span>Financeiro</span></a></li>
+                            <li><a href="tarefasBanda.html"><span>Gestão de Tarefas</span></a></li>
+                            <li><a href="compromissosBanda.html"><span>Gestão de Compromissos</span></a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-10">
+                    <div class="conteudo-adm">
+                        <canvas id="myChart" style="width: 50%;"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
