@@ -33,7 +33,7 @@
                 tbody.removeChild(tbody.firstChild);
             }
 
-            fetch("https://groovebombackend-production.up.railway.app/saldo/" + localStorage.getItem('id'), {
+            fetch("https://aberrant-wilderness-production.up.railway.app/saldo/" + localStorage.getItem('id'), {
                 method: "GET",
                 headers: {
                     "Content-type": "application/json; charset=UTF-8",
@@ -143,7 +143,7 @@
                 }
 
                 closePopup();
-                fetch("https://groovebombackend-production.up.railway.app/saldo", {
+                fetch("https://aberrant-wilderness-production.up.railway.app/saldo", {
                     method: "POST",
                     body: JSON.stringify({
                         valor: valorMudarNum,

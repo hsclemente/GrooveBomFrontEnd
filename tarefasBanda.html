@@ -21,7 +21,7 @@
 
 
         function carregarTarefas() {
-            fetch("https://groovebombackend-production.up.railway.app/tarefa/banda/" + localStorage.getItem('codigoBanda'), {
+            fetch("https://aberrant-wilderness-production.up.railway.app/tarefa/banda/" + localStorage.getItem('codigoBanda'), {
                 method: "GET",
                 headers: {
                     "Content-type": "application/json; charset=UTF-8",
@@ -50,7 +50,7 @@
                 return;
             }
 
-            fetch("https://groovebombackend-production.up.railway.app/tarefa", {
+            fetch("https://aberrant-wilderness-production.up.railway.app/tarefa", {
                 method: "POST",
                 headers: {
                     "Content-type": "application/json; charset=UTF-8",
@@ -76,7 +76,7 @@
         }
 
         function changeColor(id) {
-            fetch("https://groovebombackend-production.up.railway.app/tarefa/" + id, {
+            fetch("https://aberrant-wilderness-production.up.railway.app/tarefa/" + id, {
                 method: "PATCH",
                 headers: {
                     "Content-type": "application/json; charset=UTF-8",
